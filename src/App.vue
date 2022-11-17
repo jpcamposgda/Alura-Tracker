@@ -1,30 +1,76 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <main class="columns is-gapless is-multiline " :class="{'modo-escuro': modoEscuroAtivo}">
+    <div class="colum is-one-quarter">
+      <BarraLateral @aoTemaAlterado="trocarTema" />
+    </div>
+    <div class="column is-three-quarter conteudo">
+      <MyFormulario @aoSalvarTarefa="salvarTarefa" />
+      <div class="lista">
+        <MyTarefa v-for="(tarefa, index) in tarefas  " :key="index" :tarefa="tarefa" />
+      </div>
+      <MyBox v-if="listaEstaVazia">
+        você não está muito produtivo
+      </MyBox>
+    </div>
+  </main>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script lang="ts">
+import { defineComponent } from "vue";
+import BarraLateral from "./components/BarraLateral.vue";
+import MyBox from "./components/MyBox.vue";
+
+import MyFormulario from "./components/MyFormulario.vue";
+import MyTarefa from "./components/MyTarefa.vue";
+import ITarefa from "./interfaces/ITarefa";
+
+export default defineComponent({
+  name: "App",
+  components: { BarraLateral, MyFormulario, MyTarefa, MyBox },
+  data() {
+    return {
+      tarefas: [] as ITarefa[],
+      modoEscuroAtivo: false
+    };
+  },
+
+  computed: { 
+    listaEstaVazia(): boolean {
+      return this.tarefas.length === 0
+    }
+   },
+
+  methods: {
+    salvarTarefa(tarefa: ITarefa) {
+      this.tarefas.push(tarefa)
+    },
+
+    trocarTema(props:boolean) {
+
+      this.modoEscuroAtivo = props
+
+    }
+  },
+});
+</script>
+
+
+<style >
+.lista {
+  padding: 1.25rem;
 }
 
-nav {
-  padding: 30px;
+main { 
+  --bg-primario: #fff;
+  --texto-primario: #000;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+main.modo-escuro {
+  --bg-primario: #2b2d42;
+  --texto-primario: #ddd;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+.conteudo{
+  background-color: var(--bg-primario);
 }
 </style>
